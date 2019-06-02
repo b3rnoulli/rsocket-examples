@@ -2,8 +2,6 @@ plugins {
     id 'java'
 }
 
-version 'unspecified'
-
 sourceCompatibility = 1.8
 
 repositories {
@@ -11,5 +9,11 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile 'io.rsocket:rsocket-core:0.12.2-RC3'
+    compile 'io.rsocket:rsocket-transport-netty:0.12.2-RC3'
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.26'
+    compile 'org.codehaus.janino:janino:2.7.8'
 }

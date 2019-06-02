@@ -39,7 +39,7 @@ public class MultipleServers {
 
         @Override
         public Mono<RSocket> accept(ConnectionSetupPayload setup, RSocket sendingSocket) {
-            log.info("Received setup connection on accpetor: [{}]", serverName);
+            log.info("Received setup connection on acceptor: [{}]", serverName);
             return Mono.just(new AbstractRSocket() {
                 @Override
                 public Mono<Payload> requestResponse(Payload payload) {
