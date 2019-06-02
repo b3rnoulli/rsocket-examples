@@ -1,0 +1,42 @@
+plugins {
+    id "com.google.protobuf" version "0.8.8"
+    id "java"
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'io.rsocket.rpc:rsocket-rpc-core:0.2.12'
+    compile 'io.rsocket:rsocket-transport-netty:0.12.1-RC3'
+
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.26'
+    compile 'org.codehaus.janino:janino:2.7.8'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.6.1'
+    }
+    generatedFilesBaseDir = "${projectDir}/build/generated-sources/"
+
+    plugins {
+        rsocketRpc {
+            artifact = 'io.rsocket.rpc:rsocket-rpc-protobuf:0.2.17'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            rsocketRpc {}
+        }
+    }
+}
+
+sourceSets.main.java.srcDirs = ['build/generated-sources/main/java',
+                                'build/generated-sources/main/rsocketRpc',
+                                'src/main/java']

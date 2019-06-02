@@ -1,0 +1,7 @@
+rootProject.name = 'rsocket-examples'
+include 'interaction-model'
+include 'resumability'
+include 'load-balancing'
+include 'rpc'
+include 'spring-reactor'
+
