@@ -17,7 +17,7 @@ public class Channel {
                 .transport(TcpClientTransport.create(HOST, PORT))
                 .start()
                 .block()
-                .requestChannel(Flux.interval(Duration.ofMillis(1000))
+                .requestChannel(Flux.interval(Duration.ofMillis(100))
                         .map(time -> DefaultPayload.create("Jenny")))
                 .blockLast();
     }

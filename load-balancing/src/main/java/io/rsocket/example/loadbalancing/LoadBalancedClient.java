@@ -15,10 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.rsocket.example.loadbalancing.MultipleServers.HOST;
-import static io.rsocket.example.loadbalancing.MultipleServers.PORTS;
 
 @Slf4j
 public class LoadBalancedClient {
+
+    static final int[] PORTS = new int[]{7000, 7001, 7002};
 
     public static void main(String[] args) {
 
@@ -33,7 +34,7 @@ public class LoadBalancedClient {
             s.onComplete();
         });
 
-        Flux.range(0, 10)
+        Flux.range(0, 100)
                 .flatMap(i -> balancer)
                 .doOnNext(rSocket -> rSocket.requestResponse(DefaultPayload.create("test-request")).block())
                 .blockLast();

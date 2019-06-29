@@ -1,11 +1,14 @@
 package io.rsocket.example.rpc;
 
-import com.rsocket.rpc.Request;
-import com.rsocket.rpc.ServiceClient;
+import com.rsocket.rpc.CustomerServiceClient;
+import com.rsocket.rpc.MultipleCustomersRequest;
+import com.rsocket.rpc.SingleCustomerRequest;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.UUID;
 
 @Slf4j
 public class Client {
@@ -16,17 +19,27 @@ public class Client {
                 .transport(TcpClientTransport.create(7000))
                 .start()
                 .block();
-        ServiceClient serviceClient = new ServiceClient(rSocket);
+        CustomerServiceClient customerServiceClient = new CustomerServiceClient(rSocket);
 
-        serviceClient.fireAndForget(Request.newBuilder()
-                .setMessage("world!").build())
+        customerServiceClient.deleteCustomer(SingleCustomerRequest.newBuilder()
+                .setId(UUID.randomUUID().toString()).build())
                 .block();
 
-        serviceClient.requestResponse(Request.newBuilder()
-                .setMessage("world!").build())
-                .doOnNext(response -> log.info("Received response: [{}]", response))
+        customerServiceClient.getCustomer(SingleCustomerRequest.newBuilder()
+                .setId(UUID.randomUUID().toString()).build())
+                .doOnNext(response -> log.info("Received response for 'getCustomer': [{}]", response))
                 .block();
 
+        customerServiceClient.getCustomers(MultipleCustomersRequest.newBuilder()
+                .addIds(UUID.randomUUID().toString()).build())
+                .doOnNext(response -> log.info("Received response for 'getCustomers': [{}]", response))
+                .subscribe();
+
+        customerServiceClient.customerChannel(s -> s.onNext(MultipleCustomersRequest.newBuilder()
+                .addIds(UUID.randomUUID().toString())
+                .build()))
+                .doOnNext(customerResponse -> log.info("Received response for 'customerChannel' [{}]", customerResponse))
+                .blockLast();
     }
 
 }

@@ -6,11 +6,11 @@ import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.util.DefaultPayload;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.rsocket.example.resumability.ResumableServer.HOST;
-import static io.rsocket.example.resumability.ResumableServer.RESUME_SESSION_DURATION;
+import static io.rsocket.example.resumability.ResumableResponder.HOST;
+import static io.rsocket.example.resumability.ResumableResponder.RESUME_SESSION_DURATION;
 
 @Slf4j
-public class ResumableClient {
+public class ResumableRequester {
 
     private static final int CLIENT_PORT = 7001;
 

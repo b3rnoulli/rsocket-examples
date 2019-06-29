@@ -7,16 +7,22 @@ package com.rsocket.rpc;
 import "google/protobuf/empty.proto";
 
 
-message Request {
-    string message = 1;
+message SingleCustomerRequest {
+    string id = 1;
 }
 
-message Response {
-    string message = 1;
+message MultipleCustomersRequest {
+    repeated string ids = 1;
 }
 
-service Service {
-    rpc fireAndForget(Request) returns (google.protobuf.Empty) {}
-    rpc requestResponse(Request) returns (Response) {}
-    rpc requestStream(Request) returns (stream Response) {}
+message CustomerResponse {
+    string id = 1;
+    string name = 2;
+}
+
+service CustomerService {
+    rpc getCustomer(SingleCustomerRequest) returns (CustomerResponse) {} //request-response
+    rpc getCustomers(MultipleCustomersRequest) returns (stream CustomerResponse) {} //request-stream
+    rpc deleteCustomer(SingleCustomerRequest) returns (google.protobuf.Empty) {} //fire'n'forget
+    rpc customerChannel(stream MultipleCustomersRequest) returns (stream CustomerResponse) {} //request-channel
 }

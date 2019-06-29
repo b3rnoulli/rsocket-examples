@@ -10,11 +10,12 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 
 @Slf4j
-public class ResumableServer {
+public class ResumableResponder {
 
     private static final int SERVER_PORT = 7000;
     static final String HOST = "localhost";
     static final Duration RESUME_SESSION_DURATION = Duration.ofSeconds(60);
+
 
     public static void main(String[] args) throws InterruptedException {
 
