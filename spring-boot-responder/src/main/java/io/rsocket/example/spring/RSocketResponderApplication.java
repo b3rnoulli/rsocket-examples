@@ -1,7 +1,6 @@
 package io.rsocket.example.spring;
 
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 
 @Slf4j
@@ -34,30 +32,21 @@ public class RSocketResponderApplication {
 
         @MessageMapping("customer")
         CustomerResponse getCustomer(CustomerRequest customerRequest) {
-            return CustomerResponse.builder()
-                    .id(customerRequest.getId())
-                    .name(getRandomName())
-                    .build();
+            return new CustomerResponse(customerRequest.getId(), getRandomName());
         }
 
         @MessageMapping("customer-stream")
         Flux<CustomerResponse> getCustomers(MultipleCustomersRequest multipleCustomersRequest) {
             return Flux.range(0, multipleCustomersRequest.getIds().size())
                     .delayElements(Duration.ofMillis(500))
-                    .map(id -> CustomerResponse.builder()
-                            .id(multipleCustomersRequest.getIds().get(id))
-                            .name(getRandomName())
-                            .build());
+                    .map(i -> new CustomerResponse(multipleCustomersRequest.getIds().get(i), getRandomName()));
         }
 
         @MessageMapping("customer-channel")
         Flux<CustomerResponse> getCustomersChannel(Flux<CustomerRequest> requests) {
             return Flux.from(requests)
                     .doOnNext(message -> log.info("Received 'customerChannel' request [{}]", message))
-                    .map(message -> CustomerResponse.builder()
-                            .id(message.getId())
-                            .name(getRandomName())
-                            .build());
+                    .map(message -> new CustomerResponse(message.getId(), getRandomName()));
         }
 
         private String getRandomName() {
@@ -66,28 +55,46 @@ public class RSocketResponderApplication {
 
     }
 }
-
 @Getter
 @ToString
-@Builder
 class CustomerRequest {
     private String id;
+
+    public CustomerRequest() {
+    }
+
+    CustomerRequest(String id) {
+        this.id = id;
+    }
 }
 
 @Getter
 @ToString
-@Builder
 class MultipleCustomersRequest {
     private List<String> ids;
+
+    public MultipleCustomersRequest() {
+    }
+
+    MultipleCustomersRequest(List<String> ids) {
+        this.ids = ids;
+    }
 }
+
 
 @Getter
 @ToString
-@Builder
 class CustomerResponse {
 
     private String id;
 
     private String name;
 
+    public CustomerResponse() {
+    }
+
+    CustomerResponse(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

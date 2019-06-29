@@ -4,18 +4,20 @@ import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.client.TcpClientTransport;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,6 +43,7 @@ public class RSocketRequesterApplication {
         return RSocketFactory
                 .connect()
                 .frameDecoder(PayloadDecoder.ZERO_COPY)
+                .dataMimeType(MimeTypeUtils.APPLICATION_JSON_VALUE)
                 .transport(TcpClientTransport.create(7000))
                 .start()
                 .block();
@@ -63,21 +66,19 @@ public class RSocketRequesterApplication {
         }
 
         @GetMapping("/customers/{id}")
-        Mono<CustomerResponse> getCustomer(String id) {
+        Mono<CustomerResponse> getCustomer(@PathVariable String id) {
             return customerServiceAdapter.getCustomer(id);
         }
 
-        @GetMapping("/customers")
-        Flux<CustomerResponse> getCustomers() {
-            return customerServiceAdapter.getCustomers(getRandomIds(100));
+        @GetMapping(value = "/customers", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+        Publisher<CustomerResponse> getCustomers() {
+            return customerServiceAdapter.getCustomers(getRandomIds(10));
         }
 
-        @GetMapping("/customers-channel")
-        Flux<CustomerResponse> getCustomersChannel() {
+        @GetMapping(value = "/customers-channel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+        Publisher<CustomerResponse> getCustomersChannel() {
             return customerServiceAdapter.getCustomerChannel(Flux.interval(Duration.ofMillis(1000))
-                    .map(id -> CustomerRequest.builder()
-                            .id(UUID.randomUUID().toString())
-                            .build()));
+                    .map(id -> new CustomerRequest(UUID.randomUUID().toString())));
         }
 
         private List<String> getRandomIds(int amount) {
@@ -85,7 +86,6 @@ public class RSocketRequesterApplication {
                     .mapToObj(n -> UUID.randomUUID().toString())
                     .collect(toList());
         }
-
 
     }
 
@@ -101,9 +101,7 @@ public class RSocketRequesterApplication {
         Mono<CustomerResponse> getCustomer(String id) {
             return rSocketRequester
                     .route("customer")
-                    .data(CustomerRequest.builder()
-                            .id(id)
-                            .build())
+                    .data(new CustomerRequest(id))
                     .retrieveMono(CustomerResponse.class)
                     .doOnNext(customerResponse -> log.info("Received customer as mono [{}]", customerResponse));
         }
@@ -111,9 +109,7 @@ public class RSocketRequesterApplication {
         Flux<CustomerResponse> getCustomers(List<String> ids) {
             return rSocketRequester
                     .route("customer-stream")
-                    .data(MultipleCustomersRequest.builder()
-                            .ids(ids)
-                            .build())
+                    .data(new MultipleCustomersRequest(ids))
                     .retrieveFlux(CustomerResponse.class)
                     .doOnNext(customerResponse -> log.info("Received customer as flux [{}]", customerResponse));
         }
@@ -128,24 +124,34 @@ public class RSocketRequesterApplication {
     }
 
 }
-
 @Getter
-@Builder
 @ToString
 class CustomerRequest {
     private String id;
+
+    public CustomerRequest() {
+    }
+
+    CustomerRequest(String id) {
+        this.id = id;
+    }
 }
 
 @Getter
-@Builder
 @ToString
 class MultipleCustomersRequest {
     private List<String> ids;
+
+    public MultipleCustomersRequest() {
+    }
+
+    MultipleCustomersRequest(List<String> ids) {
+        this.ids = ids;
+    }
 }
 
 
 @Getter
-@Builder
 @ToString
 class CustomerResponse {
 
@@ -153,4 +159,11 @@ class CustomerResponse {
 
     private String name;
 
+    public CustomerResponse() {
+    }
+
+    CustomerResponse(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
