@@ -34,10 +34,13 @@ public class LoadBalancedClient {
             s.onComplete();
         });
 
-        Flux.range(0, 100)
+        Flux.range(0, 10000)
                 .flatMap(i -> balancer)
                 .doOnNext(rSocket -> rSocket.requestResponse(DefaultPayload.create("test-request")).block())
                 .blockLast();
+
+        int a =2;
+
     }
 
 }

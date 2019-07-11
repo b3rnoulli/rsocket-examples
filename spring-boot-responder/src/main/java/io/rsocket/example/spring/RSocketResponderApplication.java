@@ -52,7 +52,6 @@ public class RSocketResponderApplication {
         private String getRandomName() {
             return RANDOM_NAMES.get(new Random().nextInt(RANDOM_NAMES.size() - 1));
         }
-
     }
 }
 @Getter
