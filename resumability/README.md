@@ -32,4 +32,4 @@ Then, you should see *RESUME* and *RESUME_OK* frames in the logs:
 ```
 
 
-To find out more about resumability mechanism in RSocket see: xxxxx
+To find out more about resumability mechanism in RSocket see: https://blog.grapeup.com/read/reactive-service-to-service-communication-with-rsocket-load-balancing--resumability-65
