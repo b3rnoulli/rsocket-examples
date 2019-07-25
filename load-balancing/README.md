@@ -7,6 +7,6 @@ the frames sent to different RSocket responders, e.g:
 ![Alt text](img/load-balancer-logs.png?raw=true "Load balancer")
 
 
-More details about RSocket load balancing are available in the article: xxxxx
+More details about RSocket load balancing are available in the article: https://blog.grapeup.com/read/reactive-service-to-service-communication-with-rsocket-load-balancing--resumability-65
 
 Please notice, that the examples was designed to work from your IDE.
