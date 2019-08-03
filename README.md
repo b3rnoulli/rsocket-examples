@@ -3,7 +3,7 @@
 
 ## Introduction
 
-This repository contains examples used in the series of articles about RSocket. The articles are available here: xxxxx
+This repository contains examples used in the series of articles about RSocket. The articles are available here: https://medium.com/@b3rnoulli/reactive-service-to-service-communication-with-rsocket-introduction-5d64e5b6909
 
 It consist of following modules:
 - interaction-model
