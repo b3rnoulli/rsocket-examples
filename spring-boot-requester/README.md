@@ -11,4 +11,4 @@ which are routed to the Spring Boot Responder application using RSocket as a tra
 In order to run this example please start the Responder application first 
 and then spin up the requester.
 
-More details about RSocket and Spring Boot integration can be found here: xxxx
+More details about RSocket and Spring Boot integration can be found here: https://blog.grapeup.com/read/reactive-service-to-service-communication-with-rsocket-abstraction-over-the-rsocket-66
